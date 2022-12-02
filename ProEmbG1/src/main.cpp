@@ -9,12 +9,29 @@
 
 LiquidCrystal_I2C lcd(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
 
+bool modo = true;
+bool aceptar = true;
+bool mostrar = true;
 
 void setup() {
   lcd.begin(COLUMS,ROWS);
-  
+  lcd.print("Ecuares");
+  delay(3000);
+  lcd.clear();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  while (mostrar)
+  {
+    while (aceptar)
+    {
+      while (modo)
+      {
+        /* Programacion del modo */
+      }
+      
+    }
+    
+  }
+  
 }
