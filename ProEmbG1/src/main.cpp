@@ -50,9 +50,9 @@ void selec_mode(){
 void setup() {
   lcd.begin(COLUMS,ROWS);
   //Serial.begin(9600);
-  pinMode(bt_modo,INPUT_PULLUP);
-  pinMode(bt_aceptar,INPUT_PULLUP);
-  pinMode(bt_mostrar,INPUT_PULLUP);
+  pinMode(bt_modo,INPUT_PULLDOWN);
+  pinMode(bt_aceptar,INPUT_PULLDOWN);
+  pinMode(bt_mostrar,INPUT_PULLDOWN);
   pinMode(vsensor,INPUT);
 
   pinMode(led_1_2w,OUTPUT);
@@ -76,22 +76,22 @@ void loop() {
       while (modo)
       {
         
-        if(digitalRead(bt_modo)==LOW){
+        if(digitalRead(bt_modo)==HIGH){
           delay(20);
-          if(digitalRead(bt_modo)==LOW){
+          if(digitalRead(bt_modo)==HIGH){
             selec_mode();
-            while (digitalRead(bt_modo)==LOW){
+            while (digitalRead(bt_modo)==HIGH){
               delay(20);
             }
           }
         }
-        if ((digitalRead(led_1_2w)==HIGH | digitalRead(led_1_4w)== HIGH) & digitalRead(bt_aceptar)==LOW){
+        if ((digitalRead(led_1_2w)==HIGH | digitalRead(led_1_4w)== HIGH) & digitalRead(bt_aceptar)==HIGH){
           modo = false;
           lcd.clear();
           lcd.setCursor(5,0);
-          lcd.print("*Modo*");
+          lcd.print("*Realizando*");
           lcd.setCursor(2,1);
-          lcd.print("seleccionado");
+          lcd.print("medicion");
           delay(2000);
         }
       }
@@ -101,13 +101,6 @@ void loop() {
         Operacion para pasar el valor ADC a resistencia
 
         */
-     
-
-
-
-}
-
-
       
       lcd.setCursor(2,0);
       int v=0;
@@ -130,6 +123,6 @@ void loop() {
       */
       modo = true;
     }
-    
+  }
 }
   
