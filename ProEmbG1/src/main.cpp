@@ -4,6 +4,8 @@
 #include <math.h>
 #include <Tone32.h>
 #include <FS.h>
+#include <WiFi.h>
+#include <FirebaseESP32.h>
 
 
 #define COLUMS 16
@@ -12,7 +14,10 @@
 #define PAGE   ((COLUMS) * (ROWS))
 #define buzzer_c 0
 
-float resCom [13] ={1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.1,5.6,6.8,8.2};
+#define WIFI_SSID "WIFI_AP"
+#define WIFI_PASSWORD "WIFI_PASSWORD"
+
+float resCom [14] ={1,1.2,1.5,1.8,2.2,2.4,2.7,3.3,3.9,4.7,5.1,5.6,6.8,8.2};
 
 int led_1_4w = 4;
 int led_1_2w = 5;
@@ -23,7 +28,7 @@ int bt_modo = 26;
 int bt_aceptar = 27;
 int bt_mostrar = 12;
 
-const int vsensor = 34;
+const int vsensor = 35;
 int valor = 0;
 
 LiquidCrystal_I2C lcd(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
@@ -55,7 +60,7 @@ void selec_mode(){
 
 float escogerRes(float r){
   int i=0;
-  for(i=0;i<13;i++){
+  for(i=0;i<14;i++){
     float valor=resCom[i];
   
   
@@ -80,14 +85,14 @@ float escogerRes(float r){
 
 float calculoRes(){
   float voltage = 0;
-  int muestras = 1000;
+  int muestras = 100;
 
   for (int i=0;i<muestras;i++){
-    voltage = voltage + analogRead(vsensor)*(5.0/4095.0);
+    voltage = voltage + analogRead(vsensor)*(3.313/4095.0);
   }
-  voltage = voltage/muestras;
+  voltage = (voltage/muestras)+0.2;
 
-  float current = (voltage-2.5)/0.100;
+  float current = (3.313-voltage)/1000;
 
   float res = voltage/current;
 
@@ -155,12 +160,12 @@ void loop() {
       }
       lcd.clear();
       //valor = analogRead(vsensor);
-      int valorRes = calculoRes();
+      float valorRes = calculoRes();
       lcd.setCursor(2,0);
       /*
         Metodo para pasar el valor a string
       */
-      lcd.printf("R= %d",valorRes);      
+      lcd.printf("R= %.2f",valorRes);      
       lcd.setCursor(2,1);
       if (digitalRead(led_1_2w)==HIGH){
         lcd.print("P=1/2W");
