@@ -2,16 +2,22 @@
 #include <Wire.h>              //for ESP8266 use bug free i2c driver https://github.com/enjoyneering/ESP8266-I2C-Driver
 #include <LiquidCrystal_I2C.h>
 #include <math.h>
+#include <Tone32.h>
+#include <FS.h>
+
 
 #define COLUMS 16
 #define ROWS   2
 
 #define PAGE   ((COLUMS) * (ROWS))
+#define buzzer_c 0
+
 float resCom [13] ={1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.1,5.6,6.8,8.2};
 
 int led_1_4w = 4;
 int led_1_2w = 5;
 int buzzer = 2;
+
 
 int bt_modo = 26;
 int bt_aceptar = 27;
@@ -72,6 +78,30 @@ float escogerRes(float r){
   }  
 }
 
+float calculoRes(){
+  float voltage = 0;
+  int muestras = 1000;
+
+  for (int i=0;i<muestras;i++){
+    voltage = voltage + analogRead(vsensor)*(5.0/4095.0);
+  }
+  voltage = voltage/muestras;
+
+  float current = (voltage-2.5)/0.100;
+
+  float res = voltage/current;
+
+  return escogerRes(res);
+
+}
+
+void tono(){
+  tone(buzzer,NOTE_A2,500,buzzer_c);
+  noTone(buzzer,buzzer_c);
+  tone(buzzer,NOTE_D4,500,buzzer_c);
+  noTone(buzzer,buzzer_c);
+}
+
 void setup() {
   lcd.begin(COLUMS,ROWS);
   //Serial.begin(9600);
@@ -83,8 +113,9 @@ void setup() {
   pinMode(led_1_2w,OUTPUT);
   pinMode(led_1_4w,OUTPUT);
   pinMode(buzzer,OUTPUT);
-  delay(2000);
-  lcd.print("Ecuares");
+
+  lcd.setCursor(2,0);
+  lcd.print("**Ecuares**");
   delay(3000);
   lcd.clear();
 }
@@ -102,6 +133,7 @@ void loop() {
       {
         
         if(digitalRead(bt_modo)==HIGH){
+          tono();
           delay(20);
           if(digitalRead(bt_modo)==HIGH){
             selec_mode();
@@ -111,9 +143,10 @@ void loop() {
           }
         }
         if ((digitalRead(led_1_2w)==HIGH | digitalRead(led_1_4w)== HIGH) & digitalRead(bt_aceptar)==HIGH){
+          tono();
           modo = false;
           lcd.clear();
-          lcd.setCursor(5,0);
+          lcd.setCursor(1,0);
           lcd.print("*Realizando*");
           lcd.setCursor(2,1);
           lcd.print("medicion");
@@ -121,19 +154,13 @@ void loop() {
         }
       }
       lcd.clear();
-      valor = analogRead(vsensor);
-      /*
-        Operacion para pasar el valor ADC a resistencia
-
-        */
-      
+      //valor = analogRead(vsensor);
+      int valorRes = calculoRes();
       lcd.setCursor(2,0);
-      int v=0;
-
       /*
         Metodo para pasar el valor a string
       */
-      lcd.printf("%d",valor);      
+      lcd.printf("R= %d",valorRes);      
       lcd.setCursor(2,1);
       if (digitalRead(led_1_2w)==HIGH){
         lcd.print("P=1/2W");
