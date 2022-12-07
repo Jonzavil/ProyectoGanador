@@ -17,7 +17,7 @@ int bt_modo = 26;
 int bt_aceptar = 27;
 int bt_mostrar = 12;
 
-const int vsensor = 36;
+const int vsensor = 34;
 int valor = 0;
 
 LiquidCrystal_I2C lcd(PCF8574_ADDR_A21_A11_A01, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
