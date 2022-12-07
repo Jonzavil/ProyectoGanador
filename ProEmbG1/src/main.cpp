@@ -7,7 +7,7 @@
 #define ROWS   2
 
 #define PAGE   ((COLUMS) * (ROWS))
-
+float resCom [13] ={1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.1,5.6,6.8,8.2};
 
 int led_1_4w = 4;
 int led_1_2w = 5;
@@ -45,6 +45,31 @@ void selec_mode(){
     lcd.print("1/4W");
   }
   
+}
+
+float escogerRes(float r){
+  int i=0;
+  for(i=0;i<13;i++){
+    float valor=resCom[i];
+  
+  
+      if(r>(resCom[i]-(resCom[i]*0.091) ) && r<(resCom[i]+(resCom[i]*0.09) )){
+        return(resCom[i]);
+      }
+      if(r>((resCom[i]-(resCom[i]*0.091) )*10) && r<((resCom[i]+(resCom[i]*0.09) )*10)){
+        return(resCom[i]*10);
+      }
+    
+      if(r>((resCom[i]-(resCom[i]*0.091) )*100) && r<((resCom[i]+(resCom[i]*0.09) )*100)){
+        return(resCom[i]*100);
+      }
+      if(r>((resCom[i]-(resCom[i]*0.091) )*1000) && r<((resCom[i]+(resCom[i]*0.09) )*1000)){
+        return(resCom[i]*1000);
+      }
+    if(r>((resCom[i]-(resCom[i]*0.091) )*10000) && r<((resCom[i]+(resCom[i]*0.09) )*10000)){
+        return(resCom[i]*10000);
+      }   
+  }  
 }
 
 void setup() {
