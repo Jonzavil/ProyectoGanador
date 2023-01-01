@@ -53,13 +53,12 @@ String path = "/esp32";
 
 // Inicializacion del primer ADC (1/4W)
 const int vsensorA = 35;
-int valorA = 0;
 
 // Inicializacion del segundo ADC (1/2W)
 const int vsensorB = 32;
-int valorA = 0;
 
-
+// Elegir el ADC 
+bool adc_select;
 
 void selec_mode(){
   lcd.clear();
@@ -70,6 +69,7 @@ void selec_mode(){
     lcd.print("Select mode:");
     lcd.setCursor(3,1);
     lcd.print("1/2W");
+    adc_select = true;
   }else
   {
     digitalWrite(led_1_2w,LOW);
@@ -78,6 +78,7 @@ void selec_mode(){
     lcd.print("Select mode:");
     lcd.setCursor(3,1);
     lcd.print("1/4W");
+    adc_select = false;
   }
   
 }
@@ -112,7 +113,15 @@ float calculoRes(){
   int muestras = 100;
 
   for (int i=0;i<muestras;i++){
-    voltage = voltage + analogRead(vsensorA)*(3.313/4095.0);
+    if (!adc_select)
+    {
+      voltage = voltage + analogRead(vsensorA)*(3.313/4095.0);
+    }
+    else
+    {
+      voltage = voltage + analogRead(vsensorB)*(3.313/4095.0);
+    }
+    
   }
   
   voltage = (voltage/muestras)+0.2;
@@ -125,11 +134,13 @@ float calculoRes(){
 
 }
 
+
 void tono(){
   digitalWrite(buzzer,HIGH);
   delay(50);
   digitalWrite(buzzer,LOW);
 }
+
 
 void setup() {
   lcd.begin(COLUMS,ROWS);
@@ -167,6 +178,7 @@ void setup() {
   Firebase.setwriteSizeLimit(firebaseData, "tiny");
 }
 
+
 void loop() {
   
   while (mostrar)
@@ -201,12 +213,10 @@ void loop() {
         }
       }
       lcd.clear();
-      //valorA = analogRead(vsensor);
+
+
       float valorRes = calculoRes();
       lcd.setCursor(2,0);
-      /*
-        Metodo para pasar el valorA a string
-      */
       lcd.printf("R= %.2f",valorRes);      
       lcd.setCursor(2,1);
       if (digitalRead(led_1_2w)==HIGH){
